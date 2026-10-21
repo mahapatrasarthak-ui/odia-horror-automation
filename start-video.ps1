@@ -2,6 +2,7 @@ param(
   [Parameter(Mandatory = $true)][string]$Title,
   [string]$Concept = "",
   [string]$Language = "Odia",
+  [ValidateRange(1,12)][int]$SceneCount = 12,
   [string]$Model = ""
 )
 
@@ -17,7 +18,7 @@ $repoRoot = $PSScriptRoot
 
 Push-Location (Join-Path $repoRoot "scripting")
 try {
-  $arguments = @("-m", "pipeline.one_minute", "--project-id", $projectId, "--title", $Title, "--language", $Language)
+  $arguments = @("-m", "pipeline.one_minute", "--project-id", $projectId, "--title", $Title, "--language", $Language, "--scene-count", $SceneCount)
   if (-not [string]::IsNullOrWhiteSpace($Model)) { $arguments += @("--model", $Model) }
   if (-not [string]::IsNullOrWhiteSpace($Concept)) { $arguments += @("--concept", $Concept) }
   & python @arguments
