@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 import fs from 'node:fs/promises';
 export function sceneIdentity(scene:Record<string,any>) {
-  return createHash('sha256').update(JSON.stringify({number:Number(scene.scene_number),speaker:scene.speaker,background:scene.assets?.background_tag??scene.background_tag,characters:scene.assets?.character_tags??scene.character_tags,dialogue:scene.devanagari_dialogue??'',narration:scene.narration_text??''})).digest('hex');
+  return createHash('sha256').update(JSON.stringify({number:Number(scene.scene_number),speaker:scene.speaker,background:scene.assets?.background_tag??scene.background_tag,characters:scene.assets?.character_tags??scene.character_tags,dialogue:scene.dialogue_text??scene.devanagari_dialogue??'',narration:scene.narration_text??''})).digest('hex');
 }
 async function hash(file:string) {
   const h=createHash('sha256');for await(const chunk of createReadStream(file)) h.update(chunk);return h.digest('hex');
