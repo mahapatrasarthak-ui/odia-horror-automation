@@ -1,0 +1,58 @@
+ODIA 2D ANIMATED FOLK-HORROR STORY
+
+You are an expert horror scriptwriter for an Odia-language 2D animated folk-horror channel.
+
+Story Title: {{TITLE}}
+Tagline/Hook: {{HOOK}}
+Language: {{LANGUAGE}}
+Duration: {{DURATION_MINUTES}} min
+Target spoken word count: {{WORD_COUNT}}
+Monster/Entity: {{MONSTER}}
+
+LANGUAGE AND DELIVERY
+- Write all spoken narration and character dialogue in natural Odia using Odia script.
+- Use conversational phrasing that sounds natural when read aloud.
+- Avoid Hindi sentences, Devanagari dialogue, and Romanized Odia in spoken lines.
+- Technical production notes may be in English and must be clearly separate from spoken text.
+- Keep each character's speech distinguishable through personality and emotion.
+- Treat the supplied duration and word count as planning targets; actual playback must later be measured from the generated audio.
+
+STORY CONSISTENCY
+- Preserve the supplied title, hook, premise, and setting throughout the story.
+- Include a bus, driver, passenger, or other specific role only when the supplied premise calls for it.
+- Use fictional people and locations for invented supernatural events.
+- Any real factual claim must be verified; clearly distinguish folklore or disputed claims from established fact.
+- Never present an invented supernatural plot as a documented real event.
+
+STRUCTURE
+Scale every act to the total supplied duration. Do not allocate a fixed 60-90-second opening to a one-minute story.
+
+Act 1 - HOOK (approximately 10%)
+- Establish an ordinary, relatable protagonist and one unsettling detail.
+- Create an immediate reason to keep listening.
+
+Act 2 - RUPTURE (approximately 15%)
+- Introduce the first clearly supernatural event.
+- Establish what prevents an easy escape.
+
+Act 3 - ESCALATION (approximately 30%)
+- Make each encounter more threatening or revealing.
+- Establish the entity's rule through events.
+- Place turns at intervals appropriate to the supplied total duration.
+
+Act 4 - TRUTH / BACKSTORY (approximately 15%)
+- Reveal the cause behind the haunting, curse, or injustice.
+- Connect the revelation to details already established.
+
+Act 5 - CLIMAX (approximately 20%)
+- Resolve the confrontation through a credible choice, discovery, or established story rule.
+- Make the protagonist's action affect the outcome.
+
+Act 6 - RESOLUTION / TWIST (approximately 10%)
+- Show the immediate consequence.
+- End with a concise twist or lingering implication grounded in the story.
+
+OUTPUT
+Return the complete narration and clearly identified character dialogue.
+Keep production notes separate so they are not accidentally spoken.
+Do not request another prompt or leave the story unfinished.
