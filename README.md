@@ -22,6 +22,8 @@ From the repository root, after installing Node 22.19+, FFmpeg and Python depend
 npm --prefix production install
 node welcome.mjs
 node start-video.mjs --language Odia --title "ଅନ୍ଧାର ଘର"
+# Controlled two-scene smoke test (before a full Flow run):
+node start-video.mjs --language Odia --scene-count 2 --title "ଅନ୍ଧାର ଘର"
 ```
 
 Fill the existing local `scripting/.env` once. Python can be selected with `PYTHON`; the launcher automatically uses `scripting/.venv` when present. On Mac, the Python command is `python3`. The Node launcher uses argument arrays rather than shell strings and requires no PowerShell.
@@ -38,7 +40,7 @@ node start-video.mjs --language Odia --title "ଅନ୍ଧାର ଘର"
 node start-video.mjs --language Hindi --title "आख़िरी बस की तीसरी सीट"
 ```
 
-The first Odia test uses the existing 12-scene production contract. The engine mechanics remain shared; creative prompts, voice direction, title text, metadata, and cultural details come from the selected locale.
+The normal Odia episode uses 12 scenes. For a controlled first run, add `--scene-count 2`; this exercises script, character, background, and scene validation without submitting a full episode. The engine mechanics remain shared; creative prompts, voice direction, title text, metadata, and cultural details come from the selected locale.
 
 Resume the existing Mac project with this command from the repository root (no new script or project is created):
 
