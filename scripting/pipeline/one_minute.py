@@ -8,6 +8,7 @@ import re
 from pathlib import Path
 
 from .anthropic_client import ScriptClient
+from .localization import DEFAULT_LANGUAGE, get_localization
 from .models import new_project, save
 from .prompts import render, STYLE_LOCK
 
@@ -39,7 +40,7 @@ def save_stage(path: Path, project: dict, name: str, raw: str):
     save(path, project)
 
 
-def make_prompts(scene: dict, chars: dict, bgs: dict) -> dict:
+def make_prompts(scene: dict, chars: dict, bgs: dict, locale: dict[str, str]) -> dict:
     bg = scene["background_tag"]
     tags = scene["character_tags"]
     speaker = scene["speaker"]
@@ -74,7 +75,11 @@ def make_prompts(scene: dict, chars: dict, bgs: dict) -> dict:
         "- NO depth-of-field that breaks the 2D plane\n- NO English-accent inflection\n"
         "- NO dual-character lip-sync\n- NO text overlays\n- NO watermarks"
     )
-    dialogue = scene.get("devanagari_dialogue", "").strip()
+    dialogue = (
+        str(scene.get("dialogue_text") or "").strip()
+        or str(scene.get(locale["dialogue_field"]) or "").strip()
+        or str(scene.get("devanagari_dialogue") or "").strip()
+    )
     lip = (
         "### LIP-SYNC CONTROL & AUDIO\n"
         f"[LIP-SYNC LOCK]: Only {speaker}'s mouth animates to the dialogue. "
@@ -85,8 +90,8 @@ def make_prompts(scene: dict, chars: dict, bgs: dict) -> dict:
         "The exact line must begin when this character starts speaking and end with the last mouth movement. "
         "No delayed dubbing, off-screen replacement voice or narrator reading this dialogue.\n"
         f"SPEAKER IDENTITY: {chars[speaker]['voice_description']}\n"
-        "LINGUISTIC CONSTRAINT: 100% native North Indian Hindi accent; no Western/English cadence.\n"
-        f"DIALOGUE (DEVANAGARI ONLY): \"{dialogue}\"\n"
+        f"LINGUISTIC CONSTRAINT: {locale['accent_instruction']}\n"
+        f"DIALOGUE ({locale['dialogue_label']}): \"{dialogue}\"\n"
         f"SOUND DESIGN: {scene['sound_design']}\n\n"
     ) if speaker.startswith("@CHAR-") else ""
     silent = (
@@ -97,7 +102,7 @@ def make_prompts(scene: dict, chars: dict, bgs: dict) -> dict:
         "Do not add any dialogue.\n\n"
     )
     scene["assets"] = {"background_tag": bg, "character_tags": tags}
-    # Flow owns the duration. A fixed length cuts off Hindi dialogue when the
+    # Flow owns the duration. A fixed length can cut off dialogue when the
     # generation needs more time to finish a performance.
     scene["clip_length_seconds"] = None
     scene["edit_length_seconds"] = None
@@ -110,6 +115,8 @@ def make_prompts(scene: dict, chars: dict, bgs: dict) -> dict:
 
 
 def validate(project: dict):
+    localization = project.get("localization") or {}
+    locale = get_localization(localization.get("language") or project.get("script", {}).get("language"))
     chars = {x["tag"]: x for x in project["characters"]}
     bgs = {x["tag"]: x for x in project["backgrounds"]}
     if len(chars) != len(project["characters"]) or not all(CHAR_TAG.fullmatch(t) for t in chars):
@@ -128,16 +135,28 @@ def validate(project: dict):
         if scene["speaker"].startswith("@CHAR-") and scene["speaker"] not in scene["character_tags"]:
             raise ValueError(f"Speaker absent from scene {i}")
         scene["timestamp"] = "AUTO — determined by the completed Flow clip"
-        make_prompts(scene, chars, bgs)
+        make_prompts(scene, chars, bgs, locale)
 
 
-def generate(project_id: str, model: str | None = None, title: str | None = None, concept: str | None = None):
+def generate(project_id: str, model: str | None = None, title: str | None = None, concept: str | None = None, language: str | None = None):
     client = ScriptClient(model=model)
+    locale = get_localization(language)
     path = PROJECTS_ROOT / project_id / "pipeline.json"
-    concept = concept or "बारिश में उत्तर भारतीय कस्बे की आख़िरी बस; एक अकेली महिला यात्री, तीसरी खाली सीट, और पिछली दुर्घटना में मरी आत्मा"
+    concept = concept or locale["default_concept"]
     project = new_project(project_id, "B", concept, 3)
+    project["localization"] = {
+        "language": locale["language_name"],
+        "language_code": locale["language_code"],
+        "script": locale["script_name"],
+        "region": locale["region"],
+        "culture_mode": locale["culture_mode"],
+        "dialogue_field": locale["dialogue_field"],
+        "narrator_direction": locale["narrator_direction"],
+        "title_kicker": locale["title_kicker"],
+        "fallback_title": locale["fallback_title"],
+    }
     project["style_reference"] = STYLE_LOCK
-    project["flow_project_name"] = f"YouTube Automation - {(title or 'Last Bus')[:48]}"
+    project["flow_project_name"] = f"YouTube Automation - {(title or locale['default_title'])[:48]}"
     save(path, project)
 
     if title:
@@ -149,20 +168,21 @@ def generate(project_id: str, model: str | None = None, title: str | None = None
     project["idea"].update(status="done", raw_output=raw)
     # User delegated selection. Lock the topic before the next call so later stages cannot drift.
     if title:
-        hook = ask(client, f"Write one single-sentence Devanagari Hindi folk-horror hook for this exact video title: {title}. Keep it original, set in a fictional North Indian town, and use no real people or places. Return only the hook.", 220)
-        selected = {"index": 1, "title": title.strip(), "hook": hook.strip(), "entity_archetype": "Pret-aatma"}
+        hook = ask(client, locale["hook_prompt"].format(title=title), 220)
+        selected = {"index": 1, "title": title.strip(), "hook": hook.strip(), "entity_archetype": locale["default_entity_archetype"]}
     else:
-        selected = {"index": 1, "title": "आख़िरी बस की तीसरी सीट (Aakhri Bus Ki Teesri Seat)",
-                    "hook": "बरसाती रात की आख़िरी बस में तीसरी सीट हर पड़ाव पर भीग जाती है, जबकि उस पर कोई दिखाई नहीं देता।",
-                    "entity_archetype": "Pret-aatma"}
+        selected = {"index": 1, "title": locale["default_title"],
+                    "hook": locale["default_hook"],
+                    "entity_archetype": locale["default_entity_archetype"]}
     project["idea"].update(items=[selected], selected_index=1, selected=selected)
     save(path, project)
 
-    story = render("story", {"TITLE": selected["title"], "HOOK": selected["hook"], "LANGUAGE": "Hindi",
-                               "DURATION_MINUTES": 1, "WORD_COUNT": 150, "MONSTER": "बस की तीसरी सीट की प्रेत-आत्मा"})
-    raw = ask(client, story + "\nWrite the full 130–155-word Hindi story now. Use only fictional named people and a fictional unnamed North Indian town. Every line that will be spoken must be written in Devanagari. One female protagonist, one driver, one spectral woman. Do not switch to another premise.", 4000)
-    project["script"].update(status="done", language="Hindi", duration_minutes=1, word_count=150,
-                             monster="प्रेत-आत्मा", raw_text=raw, raw_output=raw)
+    story = render("story", {"TITLE": selected["title"], "HOOK": selected["hook"],
+                               "LANGUAGE": locale["language_name"], "DURATION_MINUTES": 1,
+                               "WORD_COUNT": 150, "MONSTER": locale["default_monster"]})
+    raw = ask(client, story + "\n" + locale["story_follow_up"], 4000)
+    project["script"].update(status="done", language=locale["language_name"], duration_minutes=1, word_count=150,
+                             monster=locale["default_monster"], raw_text=raw, raw_output=raw)
     save(path, project)
 
     schema = """Return ONLY JSON: {"characters":[{"tag":"@CHAR-01-NAME","name":"...","look_summary":"...","full_prompt":"...","voice_description":"..."}]}.
@@ -179,12 +199,12 @@ Every recurring location gets a wide and a close angle as separate tagged plates
 
     compact_chars = [{"tag": c["tag"], "name": c["name"], "look_summary": c["look_summary"]} for c in project["characters"]]
     compact_bgs = [{"tag": b["tag"], "location_name": b["location_name"], "look_summary": b["look_summary"]} for b in project["backgrounds"]]
-    scene_prompt = render("scenes", {"DURATION_MINUTES": 1, "MINIMUM_SCENES": 7, "SCENE_COUNT": 12,
+    scene_prompt = render("scenes", {"LANGUAGE": locale["language_name"], "DURATION_MINUTES": 1, "MINIMUM_SCENES": 7, "SCENE_COUNT": 12,
                                      "SCRIPT": project["script"]["raw_text"],
                                      "CHARACTERS": json.dumps(compact_chars, ensure_ascii=False),
                                      "BACKGROUNDS": json.dumps(compact_bgs, ensure_ascii=False)})
     scene_schema = """Return ONLY JSON with {"scenes":[{"scene_number":1,"title":"...","background_tag":"#BGD-01-NAME","character_tags":["@CHAR-01-NAME"],"speaker":"NARRATOR|none|@CHAR-01-NAME","visual_action":"...","camera":"...","effects":"...","sound_design":"...","devanagari_dialogue":"...","narration_text":"..."}]}.
-Exactly 12 scenes in script order. Do not specify, request, or assume a fixed clip length: Flow must choose the natural length needed to complete the action and any dialogue. Use ONLY listed tags. Dialogue must be an exact line from the script; for narration, keep the exact line as metadata for later editing, not in the Flow animation prompt. For every NARRATOR or none scene, narration_text is mandatory: provide one concise Devanagari Hindi narration line consistent with the locked script, never blank. Do not invent character dialogue."""
+Exactly 12 scenes in script order. Do not specify, request, or assume a fixed clip length: Flow must choose the natural length needed to complete the action and any dialogue. Use ONLY listed tags. Dialogue must be an exact line from the script; for narration, keep the exact line as metadata for later editing, not in the Flow animation prompt. For every NARRATOR or none scene, narration_text is mandatory: provide one concise narration line in the selected language and script consistent with the locked script, never blank. Do not invent character dialogue."""
     raw = ask(client, scene_prompt + "\n" + scene_schema, 6000)
     project["scenes"] = json_object(raw)["scenes"]
     save_stage(path, project, "scenes", raw)
@@ -202,5 +222,6 @@ if __name__ == "__main__":
     parser.add_argument("--model", default=None, help="Optional model override for the selected OpenAI or Groq provider.")
     parser.add_argument("--title", default=None, help="A supplied title skips idea selection and generates the locked 12-scene project.")
     parser.add_argument("--concept", default=None, help="Optional premise detail to guide the title-based story.")
+    parser.add_argument("--language", default=DEFAULT_LANGUAGE, help="Language/locale for this run, for example Odia or Hindi.")
     args = parser.parse_args()
-    print(generate(args.project_id, args.model, title=args.title, concept=args.concept))
+    print(generate(args.project_id, args.model, title=args.title, concept=args.concept, language=args.language))
