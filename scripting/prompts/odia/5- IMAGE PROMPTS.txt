@@ -1,0 +1,38 @@
+ODIA 2D ANIMATED BACKGROUND IMAGE PROMPTS
+
+From the LOCKED script, list every distinct LOCATION.
+
+For EACH location, output a clean empty background-plate prompt in this structure:
+
+LOCATION NAME:
+BACKGROUND TAG — #BGD-XX-NAME
+REGION AND SETTING:
+WIDE PLATE PROMPT:
+CLOSE OR ALTERNATE ANGLE PROMPT:
+CONTINUITY NOTES:
+
+Provide two or three angle variations for any major recurring location, such as wide, close, entrance, road, or over-the-shoulder. Every plate must be empty of characters so the saved character assets can be added later.
+
+ODISHA ENVIRONMENT RULES
+
+- Use the region selected by the script: coastal, western, southern, central, urban, hill, river, or another justified environment.
+- Describe architecture, road surface, drainage, walls, roofs, vegetation, weather, light, transport, and materials appropriate to that setting.
+- A fictional place is preferred. Do not invent factual claims about a real town, shrine, community, or historical event.
+- Do not repeat the same generic village, temple, palm tree, or rainy road in every episode.
+- Do not insert a cultural object merely as decoration. Every visible detail should belong to the location, season, time, and premise.
+- Keep the same room layout, doors, windows, furniture, road geometry, horizon, and lighting direction across all angle variations.
+
+BASE VISUAL STYLE
+
+2D semi-realistic cartoon illustration, bold clean outlines, smooth flat cel shading, cinematic Odisha environment, flat 2D vector art, empty plate, no characters, no text, no watermark, --ar 16:9
+
+After all plates, output a BACKGROUND TAG TABLE:
+
+| Tag | Location | One-line Look |
+
+Then confirm:
+
+All background plates ready. Upload and tag them in Flow, then proceed to the animation stage.
+
+LOCKED SCRIPT:
+{{SCRIPT}}
