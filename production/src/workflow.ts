@@ -7,7 +7,7 @@ import { narrateManifest } from './narration.js';
 const production = path.join(root, 'production');
 const arg = (name: string) => { const index = process.argv.indexOf(name); return index < 0 ? undefined : process.argv[index+1]; };
 if(process.argv.includes('--help')) {
-  console.log('New video: node start-video.mjs --title "Your title" [--concept "Premise"]\nResume: node start-video.mjs --project /path/pipeline.json [--output-dir /path/output] [--user-data-dir /path/profile]\nRe-edit downloaded scenes: add --edit-only to --project.\nRun from the repository root. Mac, Windows and Linux are supported; PowerShell is not required.');
+  console.log('New video: node start-video.mjs --title "Your title" [--concept "Premise"] [--language Odia|Hindi]\nResume: node start-video.mjs --project /path/pipeline.json [--output-dir /path/output] [--user-data-dir /path/profile]\nRe-edit downloaded scenes: add --edit-only to --project.\nRun from the repository root. Mac, Windows and Linux are supported; PowerShell is not required.');
   process.exit(0);
 }
 async function command(binary: string, args: string[], cwd = production) {
@@ -22,6 +22,7 @@ async function script(name: string, args: string[]) {
 await loadEnvironment();
 let project = arg('--project') ? path.resolve(arg('--project')!) : undefined;
 const title = arg('--title');
+const language = arg('--language');
 const editOnly=process.argv.includes('--edit-only');
 if (!project && !title) throw new Error('Pass --title "Your title" for a new video or --project <pipeline.json> to resume.');
 if(editOnly&&!project) throw new Error('--edit-only requires an existing --project.');
@@ -33,7 +34,10 @@ if (!project) {
   const venv = path.join(root,'scripting','.venv',process.platform==='win32'?'Scripts/python.exe':'bin/python');
   let python = process.env.PYTHON || (process.platform==='win32'?'python':'python3');
   try { await fs.access(venv); python=venv; } catch {}
-  await command(python,['-m','pipeline.one_minute','--project-id',id,'--title',title!,...(arg('--concept')?['--concept',arg('--concept')!]:[])],path.join(root,'scripting'));
+  const generationArgs=['-m','pipeline.one_minute','--project-id',id,'--title',title!];
+  if(language) generationArgs.push('--language',language);
+  if(arg('--concept')) generationArgs.push('--concept',arg('--concept')!);
+  await command(python,generationArgs,path.join(root,'scripting'));
   project=path.join(root,'scripting','projects',id,'pipeline.json');
 }
 const pipeline=JSON.parse(await fs.readFile(project,'utf8'));
@@ -59,7 +63,7 @@ await script('mixNarration.ts',['--input-dir',output,'--narration-dir',path.join
 const final=path.join(output,'final.mp4');
 const intro=path.resolve(root,process.env.CHANNEL_INTRO_PATH || 'production/assets/channel-intro.mp4');
 const logo=path.resolve(root,process.env.CHANNEL_LOGO_PATH || 'production/assets/channel-logo.png');
-await script('addTitle.ts',['--input',path.join(output,'final-narrated.mp4'),'--output',final,'--project',project,'--title',title || completed.idea?.selected?.title || 'Hindi Folk Horror','--intro',intro,'--logo',logo,'--defer-approval']);
+await script('addTitle.ts',['--input',path.join(output,'final-narrated.mp4'),'--output',final,'--project',project,'--title',title || completed.idea?.selected?.title || completed.localization?.fallback_title || 'Folk Horror','--intro',intro,'--logo',logo,'--defer-approval']);
 await command('ffprobe',['-v','error','-show_entries','format=duration,size','-of','json',final]);
 const delivery={ video_path:final, project_file:project, edit_report:path.join(output,'final-narrated.mp4.edit-report.json'), status:'awaiting_approval', chat_markdown:`![Completed video](<${final.replace(/\\/g,'/')}>)`, question:'Is this video good enough to upload to YouTube?' };
 await fs.writeFile(path.join(output,'delivery.json'),JSON.stringify(delivery,null,2));
