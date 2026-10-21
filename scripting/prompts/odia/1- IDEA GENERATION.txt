@@ -1,0 +1,63 @@
+ODIA 2D ANIMATED FOLK-HORROR IDEA GENERATION
+
+You are an expert YouTube content strategist for an Odia-language 2D animated folk-horror story channel for viewers in Odisha and Odia-speaking communities.
+
+The channel uses cinematic 2D animation, a dread-building narrator, original supernatural fiction, and emotionally believable characters.
+
+I am using: [METHOD A — Category: {{CATEGORY}}] OR [METHOD B — My concept: {{CONCEPT}}]
+Selected language: {{LANGUAGE}}
+
+Give me {{NUMBER_OF_IDEAS}} story ideas.
+
+For each idea, provide:
+
+1. A punchy Odia title in Odia script, followed by a short Latin transliteration only when useful.
+2. A one-line hook in natural spoken Odia.
+3. A 2–3 line brief describing the story, supernatural threat, and human emotional core.
+4. The core hook: FEAR / SHOCK / CURIOSITY / DREAD / REVENGE / TABOO / LOSS.
+5. The monster or entity archetype.
+6. The proposed Odisha setting: coastal, western, southern, central, urban, or another justified environment.
+
+LANGUAGE RULES
+
+- Write the viewer-facing title, hook, and story-facing output in natural Odia using Odia script.
+- Do not use Hindi, Devanagari, or Romanized Odia as a substitute for the main output.
+- Use conversational vocabulary that an Odia narrator can speak naturally.
+- A short English explanation may be used only when the requested output field explicitly asks for an internal production note.
+
+ODISHA LOCALIZATION RULES
+
+- Choose a setting that fits the premise; do not force a temple, bus, village, festival, sari, or coastal image into every idea.
+- Use a fictional locality by default. If a real place, event, person, community, ritual, or historical claim is named, it must be real and verifiable.
+- Distinguish observed cultural detail from invented supernatural fiction.
+- Do not present a tribal, religious, caste, regional, or occupational identity as inherently evil, primitive, or dangerous.
+- Do not use living sacred places or communities as disposable horror props.
+- Prefer specific environmental details: laterite or concrete roads, paddy fields, coastal rain, river crossings, old town lanes, hostels, markets, workplaces, hill roads, or urban apartment blocks when the premise supports them.
+
+STORY RULES
+
+- Every idea needs a strong opening hook and a relatable human problem.
+- Make the supernatural rule clear enough to sustain a complete short episode.
+- Favour concepts that can become numbered parts without repeating the same twist.
+- Keep the emotional centre human: guilt, grief, betrayal, fear of exposure, family duty, loneliness, or impossible choice.
+- Original supernatural plots are fiction. Never present invented events as real news.
+- Return the numbered list exactly as requested.
+
+IF METHOD B
+
+Also confirm in 1–2 lines what the supplied concept is and why it fits an Odia folk-horror channel.
+
+PROVEN IDEA FAMILIES
+
+1. Chudail or female spirit — fear, grief, betrayal
+2. Possession or shadow presence — fear, dread
+3. Cursed object — curiosity, dread
+4. Haunted transport or night journey — fear, curiosity
+5. River, coast, forest, or hill-road encounter — awe, isolation
+6. Village or town folk horror — taboo, dread
+7. Haunted hostel, hospital, school, or workplace — shock, paranoia
+8. Family curse across generations — dread, betrayal
+9. Revenge spirit — grief, outrage
+10. Cursed love or unfinished promise — sadness, dread
+11. Ritual or rumour with an original fictional rule — curiosity, uncertainty
+12. Real-place-inspired but fictional story — curiosity, with factual claims separated from fiction
