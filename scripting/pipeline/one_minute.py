@@ -165,7 +165,7 @@ def generate(project_id: str, model: str | None = None, title: str | None = None
     if title:
         raw = "Title supplied directly by the user; idea selection intentionally skipped."
     else:
-        idea_prompt = render("ideas", {"CATEGORY": "", "CONCEPT": concept, "NUMBER_OF_IDEAS": 3})
+        idea_prompt = render("ideas", {"LANGUAGE": locale["language_name"], "CATEGORY": "", "CONCEPT": concept, "NUMBER_OF_IDEAS": 3})
         raw = ask(client, idea_prompt + "\nReturn the numbered list exactly as requested. Do not invent real place names.", 1800)
     save_stage(path, project, "ideas", raw)
     project["idea"].update(status="done", raw_output=raw)
@@ -190,13 +190,13 @@ def generate(project_id: str, model: str | None = None, title: str | None = None
 
     schema = """Return ONLY JSON: {"characters":[{"tag":"@CHAR-01-NAME","name":"...","look_summary":"...","full_prompt":"...","voice_description":"..."}]}.
 All names/roles must come from the locked script. Never include a tag table as a character. Each full_prompt must be a complete 16:9 human-proportioned 2D reference-sheet prompt with exact face, clothes, age, and pose."""
-    raw = ask(client, render("characters", {"SCRIPT": raw}) + "\n" + schema, 3000)
+    raw = ask(client, render("characters", {"LANGUAGE": locale["language_name"], "SCRIPT": raw}) + "\n" + schema, 3000)
     project["characters"] = [{**c, "status": "pending", "error": None} for c in json_object(raw)["characters"]]
     save_stage(path, project, "characters", raw)
 
     bg_schema = """Return ONLY JSON: {"backgrounds":[{"tag":"#BGD-01-NAME","location_name":"...","look_summary":"...","full_prompt":"..."}]}.
 Every recurring location gets a wide and a close angle as separate tagged plates. All plates must be empty, 16:9, and in the locked 2D style."""
-    raw = ask(client, render("backgrounds", {"SCRIPT": project["script"]["raw_text"]}) + "\n" + bg_schema, 3000)
+    raw = ask(client, render("backgrounds", {"LANGUAGE": locale["language_name"], "SCRIPT": project["script"]["raw_text"]}) + "\n" + bg_schema, 3000)
     project["backgrounds"] = [{**b, "status": "pending", "error": None} for b in json_object(raw)["backgrounds"]]
     save_stage(path, project, "backgrounds", raw)
 
