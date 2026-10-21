@@ -7,7 +7,7 @@ import { narrateManifest } from './narration.js';
 const production = path.join(root, 'production');
 const arg = (name: string) => { const index = process.argv.indexOf(name); return index < 0 ? undefined : process.argv[index+1]; };
 if(process.argv.includes('--help')) {
-  console.log('New video: node start-video.mjs --title "Your title" [--concept "Premise"] [--language Odia|Hindi]\nResume: node start-video.mjs --project /path/pipeline.json [--output-dir /path/output] [--user-data-dir /path/profile]\nRe-edit downloaded scenes: add --edit-only to --project.\nRun from the repository root. Mac, Windows and Linux are supported; PowerShell is not required.');
+  console.log('New video: node start-video.mjs --title "Your title" [--concept "Premise"] [--language Odia|Hindi] [--scene-count 2]\nResume: node start-video.mjs --project /path/pipeline.json [--output-dir /path/output] [--user-data-dir /path/profile]\nRe-edit downloaded scenes: add --edit-only to --project.\nRun from the repository root. Mac, Windows and Linux are supported; PowerShell is not required.');
   process.exit(0);
 }
 async function command(binary: string, args: string[], cwd = production) {
@@ -23,6 +23,7 @@ await loadEnvironment();
 let project = arg('--project') ? path.resolve(arg('--project')!) : undefined;
 const title = arg('--title');
 const language = arg('--language');
+const sceneCount = arg('--scene-count');
 const editOnly=process.argv.includes('--edit-only');
 if (!project && !title) throw new Error('Pass --title "Your title" for a new video or --project <pipeline.json> to resume.');
 if(editOnly&&!project) throw new Error('--edit-only requires an existing --project.');
@@ -36,6 +37,7 @@ if (!project) {
   try { await fs.access(venv); python=venv; } catch {}
   const generationArgs=['-m','pipeline.one_minute','--project-id',id,'--title',title!];
   if(language) generationArgs.push('--language',language);
+  if(sceneCount) generationArgs.push('--scene-count',sceneCount);
   if(arg('--concept')) generationArgs.push('--concept',arg('--concept')!);
   await command(python,generationArgs,path.join(root,'scripting'));
   project=path.join(root,'scripting','projects',id,'pipeline.json');
