@@ -11,7 +11,7 @@ FILES = {
 def render(stage: str, values: dict[str, object]) -> str:
     path = ROOT / FILES[stage]
     language = str(values.get("LANGUAGE", "")).strip().lower()
-    if language == "odia":
+    if language in {"odia", "or", "or-in"}:
         path = ROOT / "odia" / FILES[stage]
     if not path.exists(): raise FileNotFoundError(f"Missing literal PDF template: {path}")
     text = path.read_text(encoding="utf-8")
