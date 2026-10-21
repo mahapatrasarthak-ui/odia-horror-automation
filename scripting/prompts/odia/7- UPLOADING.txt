@@ -1,0 +1,81 @@
+ODIA YOUTUBE PUBLISHING PACKAGE
+
+The Odia script is complete. Generate the full publishing package.
+
+Selected language: {{LANGUAGE}}
+
+Deliver in this exact order.
+
+===== PART 1 — VIDEO TITLES (10 options) =====
+
+Write 10 natural Odia titles in Odia script. Add a short Latin transliteration in parentheses only when it improves search or pronunciation. Keep each title under 100 characters.
+
+Mix these formulas:
+
+- Entity or object + Odia horror story
+- Concept + chilling consequence
+- Numbered serial title
+- Hook or shock line
+- Cursed object or place
+- Emotional loss, betrayal, promise, or revenge
+
+Do not copy another channel's title. Do not use Hindi words as a shortcut. If a real place is used, keep the factual claim accurate.
+
+===== PART 2 — SEO VIDEO DESCRIPTION =====
+
+Write an Odia-first description:
+
+- Opening hook of two or three lines before Show More.
+- One paragraph explaining the episode and its fictional supernatural rule.
+- Five to eight bullet topic points.
+- Channel description and a natural subscribe invitation.
+- Eight to ten timestamps in the format 00:00 — Chapter name.
+- Footer: This is an original fictional horror story created for entertainment.
+- Minimum 350 words unless the platform's limit requires a shorter version.
+
+Use natural Odia search phrases. Add a concise English discovery sentence only when it genuinely helps an international or diaspora viewer. Do not keyword-stuff.
+
+===== PART 3 — HASHTAGS =====
+
+Write 12–15 meaningful hashtags, one per line. Prioritize:
+
+#OdiaHorrorStory
+#OdiaHorror
+#HorrorStory
+#AnimatedStories
+#ScaryStories
+
+Add topic-specific Odia or English variants only when relevant. Do not use Hindi-only hashtags for an Odia episode.
+
+===== PART 4 — VIDEO TAGS =====
+
+Write comma-separated YouTube tags within the 500-character limit. Mix exact Odia phrases, transliterated Odia phrases, broad horror terms, entity or object terms, animation terms, and channel terms.
+
+===== PART 5 — THUMBNAIL IMAGE PROMPTS (10 options) =====
+
+Write 10 single-paragraph thumbnail prompts, numbered 1–10. Each prompt must use a different composition, text treatment, and colour emphasis. Thumbnail wording should be short Odia text or a carefully chosen transliteration.
+
+Possible layouts:
+
+1. Terrified victim in the foreground with the entity behind.
+2. Single entity close-up with a barely visible Odisha environment.
+3. Ghost reaches for a victim from behind.
+4. Ritual or object at the centre with two frightened witnesses.
+5. Screaming victim in mid-action.
+6. Empty transport, road, room, or threshold with one fleeing figure.
+7. Emotional human-versus-spirit split.
+8. Group dread with repeated veiled or faceless figures only when justified by the script.
+9. Evidence object plus entity and environmental clue.
+10. Lantern environment with a lone figure in fog.
+
+MANDATORY IN EVERY THUMBNAIL PROMPT
+
+- Central figure fills 60–80% of portrait compositions.
+- Victims show terror or restrained dread; entities show menace or unnatural stillness.
+- 2D semi-realistic cartoon style, bold outlines, smooth shading, cinematic rim light.
+- Dark edge vignette, high contrast, readable Odia text on a phone-sized thumbnail.
+- No stereotypes, logos, watermarks, or unexplained cultural symbols.
+
+End every prompt with:
+
+2D semi-realistic cartoon horror thumbnail, cinematic poster composition, bold outlines, dramatic rim lighting, high saturation, dark vignette, no watermark. --ar 16:9
