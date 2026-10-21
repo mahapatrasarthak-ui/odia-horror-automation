@@ -1,0 +1,76 @@
+ODIA 2D ANIMATION PROMPTS
+
+Break the locked script into natural-length scenes covering the ENTIRE video.
+
+State at the top:
+
+Duration: {{DURATION_MINUTES}} min | Minimum Scenes: {{MINIMUM_SCENES}} | Generating: {{SCENE_COUNT}}
+Selected language: {{LANGUAGE}}
+
+Use ONLY the uploaded assets through their tags (@CHAR-XX-NAME and #BGD-XX-NAME). Copy every dialogue line EXACTLY from the locked script. Spoken narration and dialogue must remain natural Odia in Odia script.
+
+Never translate, shorten, paraphrase, or invent a character line during scene breakdown.
+
+For each scene output BOTH a STILL IMAGE prompt and an ANIMATION + AUDIO prompt in this structure:
+
+SCENE [N] — [2–3 word title]
+TIMESTAMP: [AUTO — based on the completed clip]
+ASSETS: [#BGD-XX-NAME] + [@CHAR tags present, or none]
+SPEAKER: [NARRATOR (layer in edit) / @CHAR-XX-NAME / none]
+
+STILL IMAGE PROMPT
+
+2D semi-realistic cartoon illustration, bold clean outlines, smooth flat cel shading, [locked background environment], [characters by their locked look, position, and expression], [camera angle], [lighting], flat 2D vector art, no text, no watermark, --ar 16:9.
+
+ANIMATION + AUDIO PROMPT
+
+SYSTEM AND ENVIRONMENT
+
+CLIP LENGTH: AUTO — allow the generation to complete the action and the entire spoken line; do not force a duration.
+STYLE ANCHOR: 2D semi-realistic cartoon illustration, bold clean outlines, smooth flat cel shading. Maintain 100% flat 2D vector-art aesthetics and realistic adult proportions.
+ACTIVE ENVIRONMENT: [#BGD-XX-NAME]
+ACTIVE CHARACTERS: [@CHAR tags]
+
+CONTINUITY LOCK
+
+Use only the saved environment and character references. Keep room layout, doors, furniture, lighting, costumes, hair, props, and character identity unchanged. No new location, background replacement, montage, internal cut, or unrequested camera jump.
+
+VISUAL ACTION AND CAMERA
+
+SCENE ACTION: [what happens, using the locked tags]
+CAMERA: [shot size and movement]
+PHYSICS AND EFFECTS: [rain, fog, flicker, hair, fire, water, or other justified effects]
+
+LIP-SYNC CONTROL AND AUDIO
+
+LIP-SYNC LOCK: Only the assigned speaking character's mouth animates to the exact dialogue. All other characters keep their mouths closed and still.
+AUDIO PROTOCOL: Native Odia voice synthesis only for character speech. Narrator voiceover is layered during editing for NARRATOR and none scenes.
+SPEAKER IDENTITY: [age, gender, emotional state, Odia delivery style]
+LINGUISTIC CONSTRAINT: 100% natural Odia pronunciation and Odia speech rhythm; no Hindi, Devanagari, Romanized Odia, English, or Western cadence.
+DIALOGUE (ODIA SCRIPT ONLY): [exact Odia line from the locked script, or leave empty when the speaker is NARRATOR or none]
+SOUND DESIGN: [ambient sound and effects; state clearly when narrator voiceover is added later]
+
+NEGATIVE RESTRICTIONS
+
+- NO photorealism
+- NO 3D rendering
+- NO CGI shading
+- NO oversized head or body
+- NO realistic skin or hair textures
+- NO depth of field that breaks the 2D plane
+- NO Hindi or English accent inflection
+- NO Romanized Odia in spoken dialogue
+- NO dual-character lip-sync
+- NO text overlays
+- NO watermarks
+
+Generate ALL scenes from start to finish in order, covering every line of the locked script. Do not stop midway.
+
+LOCKED SCRIPT:
+{{SCRIPT}}
+
+LOCKED CHARACTER TAGS AND PROMPTS:
+{{CHARACTERS}}
+
+LOCKED BACKGROUND TAGS AND PROMPTS:
+{{BACKGROUNDS}}
