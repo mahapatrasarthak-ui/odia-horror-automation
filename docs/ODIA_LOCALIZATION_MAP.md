@@ -8,6 +8,18 @@ The goal is not only to translate words. Every episode should feel like it was w
 
 The map covers language, Odisha settings, characters, folklore sensitivity, audio, visuals, title cards, publishing metadata, and quality checks.
 
+## Current implementation status
+
+The first localization layer is implemented on the odia-adaptation branch:
+
+- Central locale profile in scripting/pipeline/localization.py, with Odia as the fork default and Hindi preserved as an explicit option.
+- Odia routing for idea, story, character, background, animation, and publishing templates.
+- Locale-aware generator metadata, narrator direction, character voice fallback, dialogue labels, title-card kicker, and title font.
+- Locale-aware general CLI, Windows launcher, parser compatibility, and production editor dialogue lookup.
+- Python smoke tests for Odia routing, Hindi compatibility, and a complete 12-scene fake generation.
+
+Still pending is a live provider test: generate one narrator scene and one speaking-character scene, verify the actual Odia voice and Odia glyph font, then expand to the full 12-scene run.
+
 ## 1. Localization profile
 
 | Field | First Odia target | Why it matters |
@@ -194,4 +206,4 @@ Before generating the first complete Odia episode, fill this card:
 | Thumbnail text | Short Odia hook readable on a phone |
 | Sensitive elements | Real places, communities, rituals, or legends requiring review |
 
-This map is a plan and a review checklist. It does not yet convert every file. The next implementation lesson will make the code read the locale profile and remove the remaining hidden Hindi defaults, then we will validate the result with a small Odia test.
+This map remains the plan and review checklist. The locale profile, prompt routing, generator, launcher, narrator manifest, title card, and production fallbacks are now implemented on the odia-adaptation branch. The next step is the live two-scene Odia test, followed by a full 12-scene episode only after voice, glyph, timing, lip-sync, visual continuity, and cultural review pass.
