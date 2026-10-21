@@ -1,0 +1,49 @@
+ODIA 2D ANIMATED CHARACTER IMAGE PROMPTS
+
+List ALL characters from the locked script: humans, the supernatural entity, and important side characters.
+
+For EACH character output:
+
+1. NAME exactly as used in the script.
+2. ASSET TAG — @CHAR-XX-NAME. Use uppercase Latin letters, digits, and hyphens only in the tag so Flow can identify it reliably.
+3. REFERENCE-SHEET IMAGE PROMPT covering:
+   - age range, build, skin tone, exact face, jawline, eyes, nose, eyebrows
+   - hair colour, length, and style
+   - facial hair or distinguishing marks
+   - clothing appropriate to the chosen Odisha setting, season, occupation, and class
+   - jewellery, glasses, bag, tools, or other continuity props
+   - a neutral 3/4 reference pose with a clear front-facing expression
+   - the character's visual continuity notes for later scenes
+4. VOICE DESCRIPTION: natural Odia pronunciation, age, gender, emotional range, pace, and speech style. Do not use a generic Hindi accent.
+
+BASE VISUAL STYLE FOR EVERY HUMAN CHARACTER
+
+2D semi-realistic cartoon illustration, bold clean outlines, smooth flat cel shading, believable Indian character design, expressive detailed face, neutral studio background, full character reference sheet, flat 2D vector art, no text, no watermark, --ar 16:9
+
+ODISHA CHARACTER CONTINUITY
+
+- Clothing must follow the episode's selected region, time period, work, weather, and social setting.
+- Do not make every character look identical or use the same pan-Indian costume shortcut.
+- Use Odia names and relationships when the script calls for local characters.
+- Appearance should describe a person, not a stereotype. Do not infer personality or morality from skin tone, caste, tribal identity, religion, occupation, or regional dress.
+- Keep stable face shape, hair, clothing colours, identifying marks, and props across every scene.
+- If the character is from outside Odisha, make that narrative reason explicit instead of mixing identities accidentally.
+
+ENTITY OR GHOST EXTRA RULES
+
+- The entity is an original fictional design unless the script explicitly and respectfully refers to a documented legend.
+- Give it a consistent silhouette, face, clothing, movement rule, and visual signature.
+- Do not copy the sacred appearance of a living religious figure.
+- Do not portray a real community, tribe, religion, caste, or occupation as the source of evil.
+- Pale or unusual skin, long hair, damaged clothing, glowing eyes, or an under-glow may be used only when they serve the fictional design and do not become a cultural claim.
+
+After all characters, output a CHARACTER TAG TABLE:
+
+| Tag | Name | One-line Look |
+
+Then confirm:
+
+All character sheets ready. Upload and tag them in Flow, then proceed to the background stage.
+
+LOCKED SCRIPT:
+{{SCRIPT}}
