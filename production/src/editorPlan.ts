@@ -2,6 +2,7 @@ export interface EditScene {
   scene_number: number;
   speaker: string;
   narration_text?: string;
+  dialogue_text?: string;
   devanagari_dialogue?: string;
   background_tag?: string;
   assets?: { background_tag?: string; character_tags?: string[] };
