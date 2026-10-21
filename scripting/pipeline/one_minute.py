@@ -152,6 +152,9 @@ def generate(project_id: str, model: str | None = None, title: str | None = None
         "culture_mode": locale["culture_mode"],
         "dialogue_field": locale["dialogue_field"],
         "narrator_direction": locale["narrator_direction"],
+        "character_voice_fallback": locale["character_voice_fallback"],
+        "character_descriptor_fallback": locale["character_descriptor_fallback"],
+        "title_font": locale["title_font"],
         "title_kicker": locale["title_kicker"],
         "fallback_title": locale["fallback_title"],
     }
