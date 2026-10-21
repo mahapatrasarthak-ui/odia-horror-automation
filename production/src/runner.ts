@@ -7,12 +7,14 @@ async function once(label:string,item:Item,fn:()=>Promise<void>,p:Pipeline,file:
 
 export async function run(flow:FlowClient,page:any,p:Pipeline,file:string,out:string,log:(e:string,d?:any)=>void){
   await fs.mkdir(out,{recursive:true});
+  const localization=p.localization??{};
+  const defaultVoiceIdentity=String(localization.character_voice_fallback??'Native North Indian Hindi pronunciation');
   // Current Flow agent UI has no All media or active model selector. Use its
   // composer as intended, with explicit media kind and reusable asset names.
   if(await flow.agentComposer()) {
     for(const [i,c] of p.characters.entries()) await once(`character:${i+1}`,c,async()=>{
       const resume=await flow.bind(c,()=>save(file,p),'image');
-      if(!resume) await flow.agentPrompt(`Generate one 16:9 character reference IMAGE and save it as ${c.tag??c.name} for reuse in this project. Character appearance: ${c.full_prompt}. Voice identity for later videos: ${c.voice_description??'Native North Indian Hindi pronunciation'}.`);
+      if(!resume) await flow.agentPrompt(`Generate one 16:9 character reference IMAGE and save it as ${c.tag??c.name} for reuse in this project. Character appearance: ${c.full_prompt}. Voice identity for later videos: ${c.voice_description??defaultVoiceIdentity}.`);
       await flow.generate();
     },p,file,log);
     for(const [i,b] of p.backgrounds.entries()) await once(`background:${i+1}`,b,async()=>{
@@ -33,7 +35,7 @@ export async function run(flow:FlowClient,page:any,p:Pipeline,file:string,out:st
           const background=assets?.background_tag??s.background_tag;
           const backgroundDescription=p.backgrounds.find(b=>b.tag===background)?.look_summary??'';
           const speakingCharacter=p.characters.find(c=>c.tag===s.speaker);
-          const audioLock=narrator?'All characters keep mouths closed. No speech or dialogue in this source clip.':`Only ${s.speaker} speaks, in their fixed voice (${speakingCharacter?.voice_description??JSON.stringify(speakingCharacter?.voice??{})}). Speak exactly: ${s.devanagari_dialogue??''}. Audible speech and mouth movement must start together and stay synchronized. No narrator or delayed dubbed voice.`;
+          const audioLock=narrator?'All characters keep mouths closed. No speech or dialogue in this source clip.':`Only ${s.speaker} speaks, in their fixed voice (${speakingCharacter?.voice_description??JSON.stringify(speakingCharacter?.voice??{})}). Speak exactly: ${s.dialogue_text??s.devanagari_dialogue??''}. Audible speech and mouth movement must start together and stay synchronized. No narrator or delayed dubbed voice.`;
           await flow.agentPrompt(`Generate exactly one 16:9 VIDEO scene using the saved reference assets ${background} ${(assets?.character_tags??s.character_tags??[]).join(' ')}. Preserve their appearances. CONTINUITY: ${backgroundDescription}. Keep the same layout, furnishings, lighting, costumes and environment for the entire shot. No background replacement, new location, montage or internal scene cut. ${audioLock} Use a natural duration sufficient for all actions and dialogue. ${narrator?s.animation_prompt_NARRATOR_ONLY:s.animation_prompt_WITH_lipsync}`);
         }
         await flow.generate();await flow.download(out,filename);
