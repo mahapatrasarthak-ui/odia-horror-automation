@@ -1,4 +1,4 @@
-"""Generate a validated, 12-scene project from the PDF prompts with Groq."""
+"""Generate a validated one-minute project from the PDF prompts with Groq."""
 from __future__ import annotations
 
 import argparse
@@ -15,6 +15,8 @@ from .prompts import render, STYLE_LOCK
 CHAR_TAG = re.compile(r"^@CHAR-\d{2}-[A-Z][A-Z0-9-]*$")
 BG_TAG = re.compile(r"^#BGD-\d{2}-[A-Z][A-Z0-9-]*$")
 PROJECTS_ROOT = Path(os.environ.get("PROJECTS_DIR", "projects"))
+DEFAULT_SCENE_COUNT = 12
+MAX_SCENE_COUNT = 12
 
 
 def ask(client: ScriptClient, prompt: str, max_tokens: int = 4800):
@@ -114,7 +116,17 @@ def make_prompts(scene: dict, chars: dict, bgs: dict, locale: dict[str, str]) ->
     return scene
 
 
-def validate(project: dict):
+def _checked_scene_count(scene_count: int | str | None) -> int:
+    try:
+        count = int(scene_count if scene_count is not None else DEFAULT_SCENE_COUNT)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("scene_count must be an integer") from exc
+    if not 1 <= count <= MAX_SCENE_COUNT:
+        raise ValueError(f"scene_count must be between 1 and {MAX_SCENE_COUNT}")
+    return count
+
+
+def validate(project: dict, expected_scene_count: int | None = None):
     localization = project.get("localization") or {}
     locale = get_localization(localization.get("language") or project.get("script", {}).get("language"))
     chars = {x["tag"]: x for x in project["characters"]}
@@ -123,8 +135,10 @@ def validate(project: dict):
         raise ValueError("Duplicate or invalid character tags")
     if len(bgs) != len(project["backgrounds"]) or not all(BG_TAG.fullmatch(t) for t in bgs):
         raise ValueError("Duplicate or invalid background tags")
-    if len(project["scenes"]) != 12:
-        raise ValueError(f"Expected 12 scenes, got {len(project['scenes'])}")
+    stored_scene_count = localization.get("scene_count", DEFAULT_SCENE_COUNT)
+    scene_count = _checked_scene_count(expected_scene_count if expected_scene_count is not None else stored_scene_count)
+    if len(project["scenes"]) != scene_count:
+        raise ValueError(f"Expected {scene_count} scenes, got {len(project['scenes'])}")
     for i, scene in enumerate(project["scenes"], 1):
         if scene["scene_number"] != i or scene["background_tag"] not in bgs:
             raise ValueError(f"Invalid scene number or background at scene {i}")
@@ -138,9 +152,11 @@ def validate(project: dict):
         make_prompts(scene, chars, bgs, locale)
 
 
-def generate(project_id: str, model: str | None = None, title: str | None = None, concept: str | None = None, language: str | None = None):
+def generate(project_id: str, model: str | None = None, title: str | None = None, concept: str | None = None,
+             language: str | None = None, scene_count: int = DEFAULT_SCENE_COUNT):
     client = ScriptClient(model=model)
     locale = get_localization(language)
+    scene_count = _checked_scene_count(scene_count)
     path = PROJECTS_ROOT / project_id / "pipeline.json"
     concept = concept or locale["default_concept"]
     project = new_project(project_id, "B", concept, 3)
@@ -157,6 +173,8 @@ def generate(project_id: str, model: str | None = None, title: str | None = None
         "title_font": locale["title_font"],
         "title_kicker": locale["title_kicker"],
         "fallback_title": locale["fallback_title"],
+        "scene_count": scene_count,
+        "test_mode": scene_count != DEFAULT_SCENE_COUNT,
     }
     project["style_reference"] = STYLE_LOCK
     project["flow_project_name"] = f"YouTube Automation - {(title or locale['default_title'])[:48]}"
@@ -202,16 +220,17 @@ Every recurring location gets a wide and a close angle as separate tagged plates
 
     compact_chars = [{"tag": c["tag"], "name": c["name"], "look_summary": c["look_summary"]} for c in project["characters"]]
     compact_bgs = [{"tag": b["tag"], "location_name": b["location_name"], "look_summary": b["look_summary"]} for b in project["backgrounds"]]
-    scene_prompt = render("scenes", {"LANGUAGE": locale["language_name"], "DURATION_MINUTES": 1, "MINIMUM_SCENES": 7, "SCENE_COUNT": 12,
+    scene_prompt = render("scenes", {"LANGUAGE": locale["language_name"], "DURATION_MINUTES": 1,
+                                     "MINIMUM_SCENES": min(7, scene_count), "SCENE_COUNT": scene_count,
                                      "SCRIPT": project["script"]["raw_text"],
                                      "CHARACTERS": json.dumps(compact_chars, ensure_ascii=False),
                                      "BACKGROUNDS": json.dumps(compact_bgs, ensure_ascii=False)})
-    scene_schema = """Return ONLY JSON with {"scenes":[{"scene_number":1,"title":"...","background_tag":"#BGD-01-NAME","character_tags":["@CHAR-01-NAME"],"speaker":"NARRATOR|none|@CHAR-01-NAME","visual_action":"...","camera":"...","effects":"...","sound_design":"...","devanagari_dialogue":"...","narration_text":"..."}]}.
-Exactly 12 scenes in script order. Do not specify, request, or assume a fixed clip length: Flow must choose the natural length needed to complete the action and any dialogue. Use ONLY listed tags. Dialogue must be an exact line from the script; for narration, keep the exact line as metadata for later editing, not in the Flow animation prompt. For every NARRATOR or none scene, narration_text is mandatory: provide one concise narration line in the selected language and script consistent with the locked script, never blank. Do not invent character dialogue."""
+    scene_schema = f"""Return ONLY JSON with {{"scenes":[{{"scene_number":1,"title":"...","background_tag":"#BGD-01-NAME","character_tags":["@CHAR-01-NAME"],"speaker":"NARRATOR|none|@CHAR-01-NAME","visual_action":"...","camera":"...","effects":"...","sound_design":"...","dialogue_text":"...","narration_text":"..."}}]}}.
+Exactly {scene_count} scenes in script order. Do not specify, request, or assume a fixed clip length: Flow must choose the natural length needed to complete the action and any dialogue. Use ONLY listed tags. Dialogue must be an exact line from the script; for narration, keep the exact line as metadata for later editing, not in the Flow animation prompt. For every NARRATOR or none scene, narration_text is mandatory: provide one concise narration line in the selected language and script consistent with the locked script, never blank. Do not invent character dialogue."""
     raw = ask(client, scene_prompt + "\n" + scene_schema, 6000)
     project["scenes"] = json_object(raw)["scenes"]
     save_stage(path, project, "scenes", raw)
-    validate(project)
+    validate(project, scene_count)
     missing_narration = [str(s["scene_number"]) for s in project["scenes"] if s["speaker"] in {"NARRATOR", "none"} and not str(s.get("narration_text", "")).strip()]
     if missing_narration:
         raise ValueError(f"Narration text is required for every non-character scene; missing scenes: {', '.join(missing_narration)}")
@@ -223,8 +242,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--project-id", default="youtube-automation-last-bus")
     parser.add_argument("--model", default=None, help="Optional model override for the selected OpenAI or Groq provider.")
-    parser.add_argument("--title", default=None, help="A supplied title skips idea selection and generates the locked 12-scene project.")
+    parser.add_argument("--title", default=None, help="A supplied title skips idea selection and generates the locked project.")
     parser.add_argument("--concept", default=None, help="Optional premise detail to guide the title-based story.")
     parser.add_argument("--language", default=DEFAULT_LANGUAGE, help="Language/locale for this run, for example Odia or Hindi.")
+    parser.add_argument("--scene-count", type=int, default=DEFAULT_SCENE_COUNT,
+                        help="Number of scenes for this run (1–12; default 12). Use 2 for a controlled smoke test.")
     args = parser.parse_args()
-    print(generate(args.project_id, args.model, title=args.title, concept=args.concept, language=args.language))
+    print(generate(args.project_id, args.model, title=args.title, concept=args.concept,
+                   language=args.language, scene_count=args.scene_count))
