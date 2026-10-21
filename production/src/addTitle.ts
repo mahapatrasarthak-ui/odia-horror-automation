@@ -15,6 +15,14 @@ const output = path.resolve(arg('--output') ?? 'outputs/last-bus-title.mp4');
 const title = arg('--title', 'AAKHRI BUS KI TEESRI SEAT')!;
 const skipTitle = process.argv.includes('--skip-title');
 const projectFile = arg('--project');
+type ProjectLocalization = { title_kicker?: string; title_font?: string };
+let projectLocalization: ProjectLocalization | undefined;
+if (projectFile) {
+  const projectMetadata = JSON.parse(await fs.readFile(path.resolve(projectFile), 'utf8')) as { localization?: ProjectLocalization };
+  projectLocalization = projectMetadata.localization;
+}
+const titleKicker = arg('--kicker', projectLocalization?.title_kicker || process.env.TITLE_KICKER || 'H I N D I   F O L K   H O R R O R')!;
+const titleFont = arg('--title-font', projectLocalization?.title_font || process.env.TITLE_FONT_NAME || 'Georgia')!;
 const intro = path.resolve(arg('--intro') ?? 'assets/channel-intro.mp4');
 const logoArgument = arg('--logo');
 const logo = logoArgument
@@ -51,12 +59,12 @@ PlayResX: 1280
 PlayResY: 720
 [V4+ Styles]
 Format: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding
-Style: Title,Georgia,82,&H00F8F1E5,&H00F8F1E5,&HDC0B1B22,&H80000000,-1,0,0,0,100,100,0,0,1,2.5,3,8,60,60,108,1
-Style: Kicker,Georgia,19,&H009ED5D7,&H009ED5D7,&HDC0B1B22,&H80000000,0,0,0,0,100,100,5,0,1,1,2,8,60,60,200,1
+Style: Title,${titleFont},82,&H00F8F1E5,&H00F8F1E5,&HDC0B1B22,&H80000000,-1,0,0,0,100,100,0,0,1,2.5,3,8,60,60,108,1
+Style: Kicker,${titleFont},19,&H009ED5D7,&H009ED5D7,&HDC0B1B22,&H80000000,0,0,0,0,100,100,5,0,1,1,2,8,60,60,200,1
 [Events]
 Format: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text
 Dialogue: 0,0:00:00.00,0:00:03.70,Title,,0,0,0,,{\\fad(400,700)\\fscx72\\fscy72\\t(0,400,\\fscx100\\fscy100)}${escapeAss(title)}
-Dialogue: 1,0:00:00.00,0:00:03.70,Kicker,,0,0,0,,{\\fad(400,700)\\fscx72\\fscy72\\t(0,400,\\fscx100\\fscy100)}H I N D I   F O L K   H O R R O R
+Dialogue: 1,0:00:00.00,0:00:03.70,Kicker,,0,0,0,,{\\fad(400,700)\\fscx72\\fscy72\\t(0,400,\\fscx100\\fscy100)}${escapeAss(titleKicker)}
 `);
 const escapedAss = ass.replace(/\\/g, '/').replace(':', '\\:');
 const fonts = process.env.TITLE_FONTS_DIR || (process.platform === 'win32' ? 'C:/Windows/Fonts' : process.platform === 'darwin' ? '/System/Library/Fonts' : '/usr/share/fonts');
@@ -80,7 +88,7 @@ await exec('ffmpeg', [
 ], { maxBuffer: 1024 * 1024 * 8 });
 const review = projectFile ? await markReviewPending(path.resolve(projectFile), output, title) : undefined;
 console.log(JSON.stringify({
-  input, output, title, skipTitle, titleEndSeconds: skipTitle ? 0 : 3.7, intro, introSeconds, logo,
+  input, output, title, titleKicker, titleFont, skipTitle, titleEndSeconds: skipTitle ? 0 : 3.7, intro, introSeconds, logo,
   logoPlacement: { height: logoHeight, right: logoRight, bottom: logoBottom }, review,
   questions: review ? ['Is this video good enough to upload to YouTube?'] : undefined,
 }));
