@@ -9,6 +9,7 @@ export async function run(flow:FlowClient,page:any,p:Pipeline,file:string,out:st
   await fs.mkdir(out,{recursive:true});
   const localization=p.localization??{};
   const defaultVoiceIdentity=String(localization.character_voice_fallback??'Native North Indian Hindi pronunciation');
+  const defaultAccentDescriptor=String(localization.character_descriptor_fallback??'उत्तर भारतीय लहजा');
   // Current Flow agent UI has no All media or active model selector. Use its
   // composer as intended, with explicit media kind and reusable asset names.
   if(await flow.agentComposer()) {
@@ -43,7 +44,7 @@ export async function run(flow:FlowClient,page:any,p:Pipeline,file:string,out:st
     }
     return;
   }
-  for(const [i,c] of p.characters.entries()) await once(`character:${i+1}`,c,async()=>{ const resume = await flow.bind(c,()=>save(file,p),'image'); if(!resume) { await flow.click(S.addMedia); await flow.click(S.addCharacter); await flow.prompt(String(c.full_prompt)); } await flow.generate(); await flow.rename(String(c.tag??c.name)); const look=String(c.look_summary??''); const voice=(c.voice??{}) as any; const gender=voice.gender??(look.match(/\b(female|woman|girl|स्त्री|महिला)\b/i)?'female':'male'); const age=String(voice.age??(look.match(/\b\d{2}\s*(?:year|yr|वर्ष)/i)?.[0]??'')); const descriptor=String(voice.descriptor??(look.match(/(?:region|accent|लहजा|क्षेत्र)[^,.;]*/i)?.[0]??'उत्तर भारतीय लहजा')); await flow.configureVoice({gender,age,descriptor,name:String(c.name??c.tag)}); },p,file,log);
+  for(const [i,c] of p.characters.entries()) await once(`character:${i+1}`,c,async()=>{ const resume = await flow.bind(c,()=>save(file,p),'image'); if(!resume) { await flow.click(S.addMedia); await flow.click(S.addCharacter); await flow.prompt(String(c.full_prompt)); } await flow.generate(); await flow.rename(String(c.tag??c.name)); const look=String(c.look_summary??''); const voice=(c.voice??{}) as any; const gender=voice.gender??(look.match(/\b(female|woman|girl|स्त्री|महिला)\b/i)?'female':'male'); const age=String(voice.age??(look.match(/\b\d{2}\s*(?:year|yr|वर्ष)/i)?.[0]??'')); const descriptor=String(voice.descriptor??(look.match(/(?:region|accent|लहजा|क्षेत्र)[^,.;]*/i)?.[0]??defaultAccentDescriptor)); await flow.configureVoice({gender,age,descriptor,name:String(c.name??c.tag)}); },p,file,log);
   for(const [i,b] of p.backgrounds.entries()) await once(`background:${i+1}`,b,async()=>{ const resume = await flow.bind(b,()=>save(file,p),'image'); if(!resume) { await flow.click(S.allMedia); await flow.prompt(String(b.full_prompt)); await flow.click(S.aspect16x9); } await flow.generate(); await flow.rename(String(b.tag??b.location_name)); },p,file,log);
   const scenes=[...p.scenes].sort((a,b)=>Number(a.scene_number)-Number(b.scene_number));
   for(const s of scenes) {
