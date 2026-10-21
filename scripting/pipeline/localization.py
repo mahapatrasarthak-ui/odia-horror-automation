@@ -79,3 +79,4 @@ def get_localization(language: str | None = None) -> dict[str, str]:
         supported = ", ".join(sorted(_LOCALES))
         raise ValueError(f"Unsupported language {language!r}; choose one of: {supported}")
     return dict(_LOCALES[key])
+
