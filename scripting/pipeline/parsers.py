@@ -44,7 +44,8 @@ def scenes(raw):
     for i, item in enumerate(items, 1):
         speaker=item.get("speaker", "none"); anim=item.get("animation_prompt_WITH_lipsync") or item.get("animation_prompt_with_lipsync") or item.get("animation_prompt", "")
         narrator=item.get("animation_prompt_NARRATOR_ONLY") or _narrator_variant(anim)
-        out.append({"status":"pending","error":None,"scene_number":item.get("scene_number",i),"title":item.get("title",""),"timestamp":item.get("timestamp","AUTO — determined by the completed Flow clip"),"clip_length_seconds":None,"assets":{"background_tag":item.get("background_tag"),"character_tags":item.get("character_tags",[])},"speaker":speaker,"still_image_prompt":item.get("still_image_prompt", ""),"animation_prompt_WITH_lipsync":anim,"animation_prompt_NARRATOR_ONLY":narrator,"devanagari_dialogue":item.get("devanagari_dialogue", item.get("dialogue", "")),"narration_text":item.get("narration_text", "")})
+        dialogue=item.get("dialogue_text") or item.get("devanagari_dialogue") or item.get("dialogue", "")
+        out.append({"status":"pending","error":None,"scene_number":item.get("scene_number",i),"title":item.get("title",""),"timestamp":item.get("timestamp","AUTO — determined by the completed Flow clip"),"clip_length_seconds":None,"assets":{"background_tag":item.get("background_tag"),"character_tags":item.get("character_tags",[])},"speaker":speaker,"still_image_prompt":item.get("still_image_prompt", ""),"animation_prompt_WITH_lipsync":anim,"animation_prompt_NARRATOR_ONLY":narrator,"dialogue_text":dialogue,"devanagari_dialogue":dialogue,"narration_text":item.get("narration_text", "")})
     return out
 
 def publishing(raw):
@@ -95,5 +96,6 @@ def _text_scenes(raw):
         anim=re.search(r"(?:ANIMATION\s*\+\s*AUDIO\s+PROMPT|ANIMATION\s*\+\s*AUDIO\s+PROMPT:)(.*)$",block,re.I|re.S)
         asset_text=assets.group(1) if assets else ""; bg=next(iter(TAG_BG.findall(asset_text)),None); chars=TAG_CHAR.findall(asset_text); speaker=(sp.group(1).strip() if sp else "none").split()[0]
         anim_text=anim.group(1).strip() if anim else ""; dialogue=re.search(r"DIALOGUE[^:]*:\s*[\"“](.*?)[\"”]",anim_text,re.I|re.S)
-        out.append({"status":"pending","error":None,"scene_number":int(m.group(1)),"title":m.group(2).strip(),"timestamp":ts.group(1).strip() if ts else "AUTO — determined by the completed Flow clip","clip_length_seconds":None,"assets":{"background_tag":bg,"character_tags":chars},"speaker":speaker,"still_image_prompt":still.group(1).strip() if still else "","animation_prompt_WITH_lipsync":anim_text,"animation_prompt_NARRATOR_ONLY":_narrator_variant(anim_text) if speaker in {"NARRATOR","none"} else _narrator_variant(anim_text),"devanagari_dialogue":dialogue.group(1).strip() if dialogue else "","narration_text":""})
+        dialogue_text=dialogue.group(1).strip() if dialogue else ""
+        out.append({"status":"pending","error":None,"scene_number":int(m.group(1)),"title":m.group(2).strip(),"timestamp":ts.group(1).strip() if ts else "AUTO — determined by the completed Flow clip","clip_length_seconds":None,"assets":{"background_tag":bg,"character_tags":chars},"speaker":speaker,"still_image_prompt":still.group(1).strip() if still else "","animation_prompt_WITH_lipsync":anim_text,"animation_prompt_NARRATOR_ONLY":_narrator_variant(anim_text) if speaker in {"NARRATOR","none"} else _narrator_variant(anim_text),"dialogue_text":dialogue_text,"devanagari_dialogue":dialogue_text,"narration_text":""})
     return out
