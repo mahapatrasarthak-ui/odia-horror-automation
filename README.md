@@ -1,4 +1,4 @@
-# Hindi Folk-Horror YouTube Automation Pipeline
+# Odia/Hindi Folk-Horror YouTube Automation Pipeline
 
 > **New here?** Please provide your channel logo image (PNG or JPG) and intro
 > video (MP4, at least 5 seconds long, with audio). Right after cloning, run
@@ -21,12 +21,24 @@ From the repository root, after installing Node 22.19+, FFmpeg and Python depend
 ```sh
 npm --prefix production install
 node welcome.mjs
-node start-video.mjs --title "Aakhri Local"
+node start-video.mjs --language Odia --title "ଅନ୍ଧାର ଘର"
 ```
 
 Fill the existing local `scripting/.env` once. Python can be selected with `PYTHON`; the launcher automatically uses `scripting/.venv` when present. On Mac, the Python command is `python3`. The Node launcher uses argument arrays rather than shell strings and requires no PowerShell.
 
 The command generates the script, Flow assets and scene downloads, AI Studio narration downloads, music, the mixed story, and the intro/logo export. It saves `final.mp4` and `delivery.json` in the project's output folder, then records `awaiting_approval`. When running through Codex, the agent displays that MP4 in chat before asking for approval. A standalone terminal cannot attach files to a chat by itself. Login/Google verification may still require you to act in the browser.
+The command generates the script, Flow assets and scene downloads, AI Studio narration downloads, music, the mixed story, and the intro/logo export. It saves `final.mp4` and `delivery.json` in the project's output folder, then records `awaiting_approval`. When running through Codex, the agent displays that MP4 in chat before asking for approval. A standalone terminal cannot attach files to a chat by itself. Login/Google verification may still require you to act in the browser.
+
+### Locale selection
+
+This Odia fork defaults to Odia. The single source of truth is `scripting/pipeline/localization.py`; it controls language code, script, region, narrator direction, voice fallbacks, title-card wording, and font choice. Use:
+
+```sh
+node start-video.mjs --language Odia --title "ଅନ୍ଧାର ଘର"
+node start-video.mjs --language Hindi --title "आख़िरी बस की तीसरी सीट"
+```
+
+The first Odia test uses the existing 12-scene production contract. The engine mechanics remain shared; creative prompts, voice direction, title text, metadata, and cultural details come from the selected locale.
 
 Resume the existing Mac project with this command from the repository root (no new script or project is created):
 
@@ -65,7 +77,7 @@ The older PowerShell launcher prints narration and finishing commands for compat
 
 ## Important prompt-template contract
 
-The prompt bodies from `HORROR PROMPTS.pdf` are now installed in `scripting/prompts/`. They remain stage-local and are rendered with only the named input substitutions. The supplied reference image is captured in `scripting/style_reference.md` and is appended as a locked style constraint for character, background, and scene generation.
+The prompt bodies from `HORROR PROMPTS.pdf` are now installed in `scripting/prompts/`. Hindi templates remain at the original paths and Odia templates live in `scripting/prompts/odia/`; the selected locale routes each stage to the correct directory. They remain stage-local and are rendered with only the named input substitutions. The supplied reference image is captured in `scripting/style_reference.md` and is appended as a locked style constraint for character, background, and scene generation.
 
 If the templates are replaced or updated, keep the literal prompt wording intact and only change the `{{...}}` input fields:
 
